@@ -1,23 +1,401 @@
-import { Head } from 'mdx-deck'
+import { Head, Image, Appear } from 'mdx-deck'
+import { CodeSurfer } from "mdx-deck-code-surfer"
 
 export { default as theme } from './theme'
 
 <Head>
-  <title>Presentation Title</title>
+  <title>Event Sourcing</title>
 </Head>
 
-# Hello
+<img src="images/iwa.png" />
+
+# Event Sourcing
+## and some other stuffs.
 
 ---
 
-## Edit this file
+# Event Sourcing
+## + Domain-Driven Design
 
-To create your presentation
+---
 
-```notes
-- Create speaker notes in fenced code blocks
+# What is Event Sourcing
+## Source of truth is events.
+
+Events are all records that matters.
+
+
+---
+
+# Event Sourcing is ancient tech.
+
+---
+
+## Accounting and Bank
+
+| Action | Amount |
+|----|----|
+| AccountCreated | 0 |
+| AmountDeposited | 150 |
+| AmountDeposited | 70 |
+| AmountWithdrawn | 200 |
+| .... | .... |
+
+Your account balance is the result of all your transaction.
+
+---
+
+## Version Control System
+
+```
+$ git log
+....
+....
+
+```
+
+Your current source code is the result of addition/deletions in all commits.
+
+---
+
+## Database
+
+Write-ahead Log is just record of changes.
+
+---
+
+# Example: Order System.
+
+---
+
+## Traditional database.
+
+```
+  CREATE TABLE OrderHeader (..);
+  CREATE TABLE OrderLineItem (..);
+```
+
+<div style={{height: 50}}></div>
+
+| id  |  CustomerName | Address | Requested |
+|-----|---------------|---------|----------|
+| 1234  |  John Smith | blah ... | false |
+
+<div style={{height: 50}}></div>
+
+| id  |  OrderId | Product |  Quantity | Amount |
+|-----|---------------|---------|----|----|
+| 111  |  1234 | Burger | 1 | 15 |
+| 112  |  1234 | Water | 3 | 30 |
+
+---
+
+## Event Store.
+
+### StreamName: "Order-1234"
+
+| EventNumber | EventType | PayLoad |
+|----|----|----|
+| 1 | OrderCreated | { id: 1234 } |
+| 2 | OrderShippingUpdated | { CustomerName: 'John Smith', Address: '...'} |
+| 3 | OrderItemAdded | { Product: 'Burger', Quantity: 1, Amount: 15 }
+| 4 | OrderItemAdded | { Product: 'Burger', Quantity: 3, Amount: 30 }
+
+---
+
+## Let's Remove an Item and send the order request.
+
+---
+
+## Traditional database.
+
+```
+  UPDATE OrderLineItem SET Amount = Amount-1 WHERE ...;
+  UPDATE OrderHeader SET Requested = true WHERE ...;
+```
+
+<div style={{height: 50}}></div>
+
+| id  |  CustomerName | Address | Requested |
+|-----|---------------|---------|----------|
+| 1234  |  John Smith | blah ... | true |
+
+<div style={{height: 50}}></div>
+
+| id  |  OrderId | Product |  Quantity | Amount |
+|-----|---------------|---------|----|----|
+| 111  |  1234 | Burger | 1 | 15 |
+| 112  |  1234 | Water | 2 | 20 |
+
+---
+
+## Event Store.
+
+### StreamName: "Order-1234"
+
+| EventNumber | EventType | PayLoad |
+|----|----|----|
+| 1 | OrderCreated | { id: 1234 } |
+| 2 | OrderShippingUpdated | { CustomerName: 'John Smith', Address: '...'} |
+| 3 | OrderItemAdded | { Product: 'Burger', Quantity: 1, Amount: 15 }
+| 4 | OrderItemAdded | { Product: 'Burger', Quantity: 3, Amount: 30 }
+| 5 | OrderItemRemoved | { Product: 'Burger', Quantity: 1, Amount: 10 }
+| 6 | OrderRequested | { }
+
+---
+
+## 1. Only Events are persisted, not state.
+## 2. Past Events are immutable.
+
+---
+
+## How to write the controller
+
+`DoRemoveItem(id: 1234,Product: 'Water')`
+
+1. Load all events from beginning of time [0].
+2. Sequentially apply each event.
+3. Create resulting Events (`OrderItemRemoved`)
+4. Performed the action by Persisting Events.
+5. (Optionally) Apply the created events. Return latest state.
+
+---
+
+### In code
+
+```
+def remove_item()
+  order = Order.load("Order-#{params[:id]}")
+  saveToStream("Order-#{params[:id]}",
+    'OrderItemRemoved',
+    {
+      Product: product,
+      Quantity: quantity,
+      Amount: amount,
+    }
+  )
+end
+
 ```
 
 ---
 
-<https://github.com/jxnblk/mdx-deck>
+## Some Code
+
+```
+class Order < Aggregate
+  def load(streamName)
+    events = loadAllFromStream(streamName)
+    @state = {}
+    events.each do |ev|
+      @state = apply(@state, ev)
+    end
+  end
+end
+
+```
+
+---
+
+```
+class Order < Aggregate
+  def apply(state, ev)
+    switch ev.type
+      case  'OrderCreated':
+        return { requested: false, items: [] }
+      case 'OrderItemAdded':
+        item = state[:items][ev.payload[:Product]] ||= {
+          Quantity: 0,
+          Amount: 0
+        }
+        item[:Quantity] += ev.payload[:Quantity]
+        item[:Amount] += ev.payload[:Amount]
+      case 'OrderItemRemoved':
+        ...
+    end
+  end
+end
+
+```
+
+---
+
+## Aggregate
+
+* A Transactional Consitency Boundary of a business logic.
+* Not an Entity, Graph of Entities.
+* An Aggregate is contained in one Event Stream.
+
+---
+
+## Rebuilding State.
+
+```
+  [1] OrderCreated(id: 1234)
+
+  Order = {
+    id: 1234,
+    CustomerName: null,
+    Address: null,
+    Items: [],
+    Total: 0,
+  }
+
+```
+
+---
+
+## Rebuilding State.
+
+```
+  [2] OrderShippingUpdated(
+    CustomerName: 'John Smith',
+    Address: 'blah...'
+  )
+
+
+  Order = {
+    id: 1234,
+    CustomerName: 'John Smith',
+    Address: 'blah...',
+    Items: [],
+    Total: 0,
+  }
+
+```
+
+---
+
+## Rebuilding State.
+
+```
+  [3] OrderItemAdded(Product: 'Burger', Quantity: 1, Amount: 15)
+
+  Order = {
+    id: 1234,
+    CustomerName: 'John Smith',
+    Address: 'blah...',
+    Items: [ {...} ],
+    Total: 15,
+  }
+
+```
+
+---
+
+## Rebuilding State.
+
+```
+  [4] OrderItemAdded(Product: 'Water', Quantity: 3, Amount: 30)
+
+  Order = {
+    id: 1234,
+    CustomerName: 'John Smith',
+    Address: 'blah...',
+    Items: [ {...}, {...} ],
+    Total: 45,
+  }
+
+```
+
+---
+
+## Load Performance?
+
+* Each aggregate is "usually" small.
+* You can always create snapshot (Closing the book).
+
+---
+
+## Write Performance?
+
+* Append is \*\*\*FAST\*\*\*.
+* Transactional boundary per each stream.
+* Optimistic Locking (Save with ExpectedVersion)
+
+---
+
+## Read Performance?
+
+* Transform data to your flat denormalized form.
+* Feed data to your search server
+* CQRS
+
+
+---
+
+## Pro: 1. Audit and Logging.
+
+* Audit First System.
+* Log is now "free".
+* State cannot be there without Log.
+
+---
+
+## Pro: 2. Great for analytics.
+
+* You can not "go back in time" to collect data.
+* You can "replay" the events.
+* Temporal query (What was the state of the system at 2018/10/02?)
+
+---
+
+### Current state is derivative of events.
+### You lose data as soon as you store state.
+
+<div style={{height: 50}}></div>
+
+### Can you decide what to lose?
+
+---
+
+## Pro 3: Fit for distributed system.
+
+* DDD and Aggregate is good design for microservice.
+* Event Stream is simple to use/integrate.
+
+---
+
+## Pro 4: Force business analysis.
+
+* What the business does is more important than how to design data structure.
+
+---
+
+## Con: Force business analysis.
+
+* You can't design the system until you know what happens.
+* "Sprint 1: I want to cook something. Let's boil the eggs.".
+
+
+---
+
+## Handling Consitency.
+
+* Aggregate: Boundary of transaction consistency.
+* Read-only/Query system can live with eventual consistency.
+
+---
+
+## Handling GDPR.
+
+* Create Separated Stream for Sensitive Data
+* Delete those stream
+
+---
+
+... OR you can replay and filter out Identification data.
+
+---
+
+## Implementations.
+
+* Event Store: https://eventstore.org/
+* Rails Event Store: https://railseventstore.org/
+* Roll your own.
+
+---
+
+# That's it.
+
+### Q&A and Thank you.
