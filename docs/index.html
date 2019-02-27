@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<style>*{box-sizing:border-box}body{font-family:system-ui,sans-serif;margin:0}</style>
+<meta name='generator' content='mdx-deck'>
+<title data-head="true">Event Sourcing</title><style data-styled-components="krOdWo kmKUJZ gKaMTo zIEGn enxKql glSdDF jHprQs gULxAa fhSvky cWSZJf hruouF jtgGge kVSTZj eEkiTr hkLtNe iLvMQI bIQQAp hISnYn hFzpJw cXgiMa eCoqJu kaUAEP gtARdA hOCGEu fbxTAJ bNhvRs">
+/* sc-component-id: sc-bdVaJa */
+.sc-bdVaJa {} .eCoqJu{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;margin-bottom:8px;margin-left:auto;margin-right:auto;} @media print{.eCoqJu{display:none;}}
+/* sc-component-id: sc-bwzfXH */
+.sc-bwzfXH {} .kaUAEP{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:4px solid transparent;background-clip:padding-box;border-radius:9999px;width:8px;height:8px;color:inherit;opacity:0.5;margin:0px;padding:4px;color:#000;background-color:#000;} .kaUAEP:focus{outline:none;box-shadow:0 0 0 1px;}.gtARdA{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:4px solid transparent;background-clip:padding-box;border-radius:9999px;width:8px;height:8px;color:inherit;opacity:0.125;margin:0px;padding:4px;color:#000;background-color:#000;} .gtARdA:focus{outline:none;box-shadow:0 0 0 1px;}
+/* sc-component-id: sc-htpNat */
+.sc-htpNat {} .cXgiMa{position:fixed;left:0;right:0;bottom:0;}
+/* sc-component-id: sc-bxivhb */
+.sc-bxivhb {} .fbxTAJ{cursor:pointer;width:64px;height:100vh;}
+/* sc-component-id: sc-ifAKCX */
+.sc-ifAKCX {} .hOCGEu{position:fixed;top:0;left:0;bottom:0;}
+/* sc-component-id: sc-EHOje */
+.sc-EHOje {} .bNhvRs{position:fixed;top:0;right:0;bottom:0;}
+/* sc-component-id: sc-bZQynM */
+.sc-bZQynM {} .kmKUJZ{overflow-x:hidden;width:100%;height:100%;} @media print{.kmKUJZ{height:auto;overflow-x:visible;}}
+/* sc-component-id: sc-gzVnrw */
+.sc-gzVnrw {} .gKaMTo{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;width:100%;height:100%;-webkit-transition-property:-webkit-transform;-webkit-transition-property:transform;transition-property:transform;-webkit-transition-timing-function:ease-out;transition-timing-function:ease-out;-webkit-transition-duration:.3s;transition-duration:.3s;-webkit-transform:translate3d(0%,0,0);-ms-transform:translate3d(0%,0,0);transform:translate3d(0%,0,0);} @media print{.gKaMTo{height:auto;display:block;}}
+/* sc-component-id: sc-htoDjs */
+.sc-htoDjs {} .zIEGn{-webkit-flex:none;-ms-flex:none;flex:none;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-align-items:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;overflow:hidden;width:100%;height:100%;padding-left:32px;padding-right:32px;} @media print{.zIEGn{width:100vw;height:100vh;page-break-after:always;page-break-inside:avoid;-webkit-print-color-adjust:exact;}} @media screen and (min-width:40em){.zIEGn{padding-left:64px;padding-right:64px;}} @media screen and (min-width:52em){.zIEGn{padding-left:128px;padding-right:128px;}}
+/* sc-component-id: sc-dnqmqq */
+.sc-dnqmqq {} .krOdWo{font-family:"Roboto Condensed",system-ui,sans-serif;font-size:16px;text-align:center;width:100vw;height:100vh;color:#000;background-color:#FFDD00;} @media print{.krOdWo{font-size:24px;height:auto;}} @media screen and (min-width:64em){.krOdWo{font-size:32px;}}
+/* sc-component-id: sc-fjdhpX */
+.sc-fjdhpX {} .glSdDF{line-height:1.25;font-size:3em;margin-bottom:16px;margin-top:16px;color:heading;text-transform:uppercase;font-weight:700;}
+/* sc-component-id: sc-jzJRlG */
+.sc-jzJRlG {}
+/* sc-component-id: sc-cSHVUG */
+.sc-cSHVUG {} .gULxAa{line-height:1.25;font-size:2em;margin-bottom:16px;margin-top:16px;color:heading;text-transform:uppercase;font-weight:700;}
+/* sc-component-id: sc-kAzzGY */
+.sc-kAzzGY {}
+/* sc-component-id: sc-chPdSV */
+.sc-chPdSV {} .eEkiTr{line-height:1.25;font-size:1.5em;margin-bottom:16px;margin-top:16px;color:heading;text-transform:uppercase;font-weight:700;}
+/* sc-component-id: sc-kgoBCf */
+.sc-kgoBCf {}
+/* sc-component-id: sc-hMqMXs */
+.sc-hMqMXs {} .hFzpJw{color:#333;}
+/* sc-component-id: sc-kEYyzF */
+.sc-kEYyzF {} .fhSvky{font-size:1.5em;}
+/* sc-component-id: sc-kkGfuU */
+.sc-kkGfuU {} .hISnYn{text-align:left;font-size:1.5em;text-align:left;}
+/* sc-component-id: sc-iAyFgw */
+.sc-iAyFgw {} .iLvMQI{text-align:left;font-size:1.5em;text-align:left;}
+/* sc-component-id: sc-hSdWYo */
+.sc-hSdWYo {}
+/* sc-component-id: sc-cvbbAY */
+.sc-cvbbAY {} .jtgGge{font-family:"Roboto Mono",monospace;text-align:left;white-space:pre-wrap;font-size:1em;margin:0px;padding:8px;color:#fd0;background-color:#000;text-align:left;}
+/* sc-component-id: sc-jWBwVP */
+.sc-jWBwVP {} .hkLtNe{font-family:"Roboto Mono",monospace;color:#fd0;background-color:#000;}
+/* sc-component-id: sc-cMljjf */
+.sc-cMljjf {} .cWSZJf{overflow-x:auto;}
+/* sc-component-id: sc-jAaTju */
+.sc-jAaTju {} .hruouF{width:100%;border-collapse:separate;border-spacing:0;} .hruouF td,.hruouF th{text-align:left;padding-right:.5em;padding-top:.25em;padding-bottom:.25em;border-bottom:1px solid;vertical-align:top;}</style>
+</head>
+<body>
+<div id=root><div><div class="sc-dnqmqq krOdWo" mode="NORMAL" step="0" width="100vw" height="100vh" color="text"><link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700" rel="stylesheet"/><link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet"/><div class="sc-bZQynM kmKUJZ"><div class="sc-gzVnrw gKaMTo"><div class="sc-htoDjs zIEGn"><div><img src="images/iwa.png"/><h1 class="sc-jzJRlG enxKql sc-fjdhpX glSdDF" font-size="4" color="heading">Event Sourcing</h1><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">and some other stuffs.</h2></div></div><div class="sc-htoDjs zIEGn"><div><h1 class="sc-jzJRlG enxKql sc-fjdhpX glSdDF" font-size="4" color="heading">Event Sourcing</h1><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">+ Domain-Driven Design</h2></div></div><div class="sc-htoDjs zIEGn"><div><h1 class="sc-jzJRlG enxKql sc-fjdhpX glSdDF" font-size="4" color="heading">What is Event Sourcing</h1><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Source of truth is events.</h2><p class="sc-kEYyzF fhSvky" font-size="2">Events are all records that matters.</p></div></div><div class="sc-htoDjs zIEGn"><div><h1 class="sc-jzJRlG enxKql sc-fjdhpX glSdDF" font-size="4" color="heading">Event Sourcing is ancient tech.</h1></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Accounting and Bank</h2><div class="sc-cMljjf cWSZJf"><table class="sc-jAaTju hruouF"><thead><tr><th>Action</th><th>Amount</th></tr></thead><tbody><tr><td>AccountCreated</td><td>0</td></tr><tr><td>AmountDeposited</td><td>150</td></tr><tr><td>AmountDeposited</td><td>70</td></tr><tr><td>AmountWithdrawn</td><td>200</td></tr><tr><td>....</td><td>....</td></tr></tbody></table></div><p class="sc-kEYyzF fhSvky" font-size="2">Your account balance is the result of all your transaction.</p></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Version Control System</h2><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">$ git log
+....
+....
+</pre><p class="sc-kEYyzF fhSvky" font-size="2">Your current source code is the result of addition/deletions in all commits.</p></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Database</h2><p class="sc-kEYyzF fhSvky" font-size="2">Write-ahead Log is just record of changes.</p></div></div><div class="sc-htoDjs zIEGn"><div><h1 class="sc-jzJRlG enxKql sc-fjdhpX glSdDF" font-size="4" color="heading">Example: Order System.</h1></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Traditional database.</h2><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">  CREATE TABLE OrderHeader (..);
+  CREATE TABLE OrderLineItem (..);
+</pre><div style="height:50px"></div><div class="sc-cMljjf cWSZJf"><table class="sc-jAaTju hruouF"><thead><tr><th>id</th><th>CustomerName</th><th>Address</th><th>Requested</th></tr></thead><tbody><tr><td>1234</td><td>John Smith</td><td>blah ...</td><td>false</td></tr></tbody></table></div><div style="height:50px"></div><div class="sc-cMljjf cWSZJf"><table class="sc-jAaTju hruouF"><thead><tr><th>id</th><th>OrderId</th><th>Product</th><th>Quantity</th><th>Amount</th></tr></thead><tbody><tr><td>111</td><td>1234</td><td>Burger</td><td>1</td><td>15</td></tr><tr><td>112</td><td>1234</td><td>Water</td><td>3</td><td>30</td></tr></tbody></table></div></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Event Store.</h2><h3 class="sc-kgoBCf kVSTZj sc-chPdSV eEkiTr" font-size="2" color="heading">StreamName: &quot;Order-1234&quot;</h3><div class="sc-cMljjf cWSZJf"><table class="sc-jAaTju hruouF"><thead><tr><th>EventNumber</th><th>EventType</th><th>PayLoad</th></tr></thead><tbody><tr><td>1</td><td>OrderCreated</td><td>{ id: 1234 }</td></tr><tr><td>2</td><td>OrderShippingUpdated</td><td>{ CustomerName: &#x27;John Smith&#x27;, Address: &#x27;...&#x27;}</td></tr><tr><td>3</td><td>OrderItemAdded</td><td>{ Product: &#x27;Burger&#x27;, Quantity: 1, Amount: 15 }</td></tr><tr><td>4</td><td>OrderItemAdded</td><td>{ Product: &#x27;Burger&#x27;, Quantity: 3, Amount: 30 }</td></tr></tbody></table></div></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Let&#x27;s Remove an Item and send the order request.</h2></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Traditional database.</h2><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">  UPDATE OrderLineItem SET Amount = Amount-1 WHERE ...;
+  UPDATE OrderHeader SET Requested = true WHERE ...;
+</pre><div style="height:50px"></div><div class="sc-cMljjf cWSZJf"><table class="sc-jAaTju hruouF"><thead><tr><th>id</th><th>CustomerName</th><th>Address</th><th>Requested</th></tr></thead><tbody><tr><td>1234</td><td>John Smith</td><td>blah ...</td><td>true</td></tr></tbody></table></div><div style="height:50px"></div><div class="sc-cMljjf cWSZJf"><table class="sc-jAaTju hruouF"><thead><tr><th>id</th><th>OrderId</th><th>Product</th><th>Quantity</th><th>Amount</th></tr></thead><tbody><tr><td>111</td><td>1234</td><td>Burger</td><td>1</td><td>15</td></tr><tr><td>112</td><td>1234</td><td>Water</td><td>2</td><td>20</td></tr></tbody></table></div></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Event Store.</h2><h3 class="sc-kgoBCf kVSTZj sc-chPdSV eEkiTr" font-size="2" color="heading">StreamName: &quot;Order-1234&quot;</h3><div class="sc-cMljjf cWSZJf"><table class="sc-jAaTju hruouF"><thead><tr><th>EventNumber</th><th>EventType</th><th>PayLoad</th></tr></thead><tbody><tr><td>1</td><td>OrderCreated</td><td>{ id: 1234 }</td></tr><tr><td>2</td><td>OrderShippingUpdated</td><td>{ CustomerName: &#x27;John Smith&#x27;, Address: &#x27;...&#x27;}</td></tr><tr><td>3</td><td>OrderItemAdded</td><td>{ Product: &#x27;Burger&#x27;, Quantity: 1, Amount: 15 }</td></tr><tr><td>4</td><td>OrderItemAdded</td><td>{ Product: &#x27;Burger&#x27;, Quantity: 3, Amount: 30 }</td></tr><tr><td>5</td><td>OrderItemRemoved</td><td>{ Product: &#x27;Burger&#x27;, Quantity: 1, Amount: 10 }</td></tr><tr><td>6</td><td>OrderRequested</td><td>{ }</td></tr></tbody></table></div></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">1. Only Events are persisted, not state.</h2><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">2. Past Events are immutable.</h2></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">How to write the controller</h2><p class="sc-kEYyzF fhSvky" font-size="2"><code class="sc-jWBwVP hkLtNe" color="code">DoRemoveItem(id: 1234,Product: &#x27;Water&#x27;)</code></p><ol class="sc-iAyFgw iLvMQI" font-size="2"><li class="sc-hSdWYo bIQQAp">Load all events from beginning of time <!-- -->[0]<!-- -->.</li><li class="sc-hSdWYo bIQQAp">Sequentially apply each event.</li><li class="sc-hSdWYo bIQQAp">Create resulting Events (<code class="sc-jWBwVP hkLtNe" color="code">OrderItemRemoved</code>)</li><li class="sc-hSdWYo bIQQAp">Performed the action by Persisting Events.</li><li class="sc-hSdWYo bIQQAp">(Optionally) Apply the created events. Return latest state.</li></ol></div></div><div class="sc-htoDjs zIEGn"><div><h3 class="sc-kgoBCf kVSTZj sc-chPdSV eEkiTr" font-size="2" color="heading">In code</h3><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">def remove_item()
+  order = Order.load(&quot;Order-#{params[:id]}&quot;)
+  saveToStream(&quot;Order-#{params[:id]}&quot;,
+    &#x27;OrderItemRemoved&#x27;,
+    {
+      Product: product,
+      Quantity: quantity,
+      Amount: amount,
+    }
+  )
+end
+</pre></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Some Code</h2><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">class Order &lt; Aggregate
+  def load(streamName)
+    events = loadAllFromStream(streamName)
+    @state = {}
+    events.each do |ev|
+      @state = apply(@state, ev)
+    end
+  end
+end
+</pre></div></div><div class="sc-htoDjs zIEGn"><div><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">class Order &lt; Aggregate
+  def apply(state, ev)
+    switch ev.type
+      case  &#x27;OrderCreated&#x27;:
+        return { requested: false, items: [] }
+      case &#x27;OrderItemAdded&#x27;:
+        item = state[:items][ev.payload[:Product]] ||= {
+          Quantity: 0,
+          Amount: 0
+        }
+        item[:Quantity] += ev.payload[:Quantity]
+        item[:Amount] += ev.payload[:Amount]
+      case &#x27;OrderItemRemoved&#x27;:
+        ...
+    end
+  end
+end
+</pre></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Aggregate</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">A Transactional Consitency Boundary of a business logic.</li><li class="sc-hSdWYo bIQQAp">Not an Entity, Graph of Entities.</li><li class="sc-hSdWYo bIQQAp">An Aggregate is contained in one Event Stream.</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Rebuilding State.</h2><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">  [1] OrderCreated(id: 1234)
+
+  Order = {
+    id: 1234,
+    CustomerName: null,
+    Address: null,
+    Items: [],
+    Total: 0,
+  }
+</pre></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Rebuilding State.</h2><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">  [2] OrderShippingUpdated(
+    CustomerName: &#x27;John Smith&#x27;,
+    Address: &#x27;blah...&#x27;
+  )
+
+
+  Order = {
+    id: 1234,
+    CustomerName: &#x27;John Smith&#x27;,
+    Address: &#x27;blah...&#x27;,
+    Items: [],
+    Total: 0,
+  }
+</pre></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Rebuilding State.</h2><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">  [3] OrderItemAdded(Product: &#x27;Burger&#x27;, Quantity: 1, Amount: 15)
+
+  Order = {
+    id: 1234,
+    CustomerName: &#x27;John Smith&#x27;,
+    Address: &#x27;blah...&#x27;,
+    Items: [ {...} ],
+    Total: 15,
+  }
+</pre></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Rebuilding State.</h2><pre class="sc-cvbbAY jtgGge" font-size="1" color="pre">  [4] OrderItemAdded(Product: &#x27;Water&#x27;, Quantity: 3, Amount: 30)
+
+  Order = {
+    id: 1234,
+    CustomerName: &#x27;John Smith&#x27;,
+    Address: &#x27;blah...&#x27;,
+    Items: [ {...}, {...} ],
+    Total: 45,
+  }
+</pre></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Load Performance?</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">Each aggregate is &quot;usually&quot; small.</li><li class="sc-hSdWYo bIQQAp">You can always create snapshot (Closing the book).</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Write Performance?</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">Append is <!-- -->*<!-- -->*<!-- -->*<!-- -->FAST<!-- -->*<!-- -->*<!-- -->*<!-- -->.</li><li class="sc-hSdWYo bIQQAp">Transactional boundary per each stream.</li><li class="sc-hSdWYo bIQQAp">Optimistic Locking (Save with ExpectedVersion)</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Read Performance?</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">Transform data to your flat denormalized form.</li><li class="sc-hSdWYo bIQQAp">Feed data to your search server</li><li class="sc-hSdWYo bIQQAp">CQRS</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Pro: 1. Audit and Logging.</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">Audit First System.</li><li class="sc-hSdWYo bIQQAp">Log is now &quot;free&quot;.</li><li class="sc-hSdWYo bIQQAp">State cannot be there without Log.</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Pro: 2. Great for analytics.</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">You can not &quot;go back in time&quot; to collect data.</li><li class="sc-hSdWYo bIQQAp">You can &quot;replay&quot; the events.</li><li class="sc-hSdWYo bIQQAp">Temporal query (What was the state of the system at 2018/10/02?)</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h3 class="sc-kgoBCf kVSTZj sc-chPdSV eEkiTr" font-size="2" color="heading">Current state is derivative of events.</h3><h3 class="sc-kgoBCf kVSTZj sc-chPdSV eEkiTr" font-size="2" color="heading">You lose data as soon as you store state.</h3><div style="height:50px"></div><h3 class="sc-kgoBCf kVSTZj sc-chPdSV eEkiTr" font-size="2" color="heading">Can you decide what to lose?</h3></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Pro 3: Fit for distributed system.</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">DDD and Aggregate is good design for microservice.</li><li class="sc-hSdWYo bIQQAp">Event Stream is simple to use/integrate.</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Pro 4: Force business analysis.</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">What the business does is more important than how to design data structure.</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Con: Force business analysis.</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">You can&#x27;t design the system until you know what happens.</li><li class="sc-hSdWYo bIQQAp">&quot;Sprint 1: I want to cook something. Let&#x27;s boil the eggs.&quot;.</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Handling Consitency.</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">Aggregate: Boundary of transaction consistency.</li><li class="sc-hSdWYo bIQQAp">Read-only/Query system can live with eventual consistency.</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Handling GDPR.</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">Create Separated Stream for Sensitive Data</li><li class="sc-hSdWYo bIQQAp">Delete those stream</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><p class="sc-kEYyzF fhSvky" font-size="2">... OR you can replay and filter out Identification data.</p></div></div><div class="sc-htoDjs zIEGn"><div><h2 class="sc-kAzzGY jHprQs sc-cSHVUG gULxAa" font-size="3" color="heading">Implementations.</h2><ul class="sc-kkGfuU hISnYn" font-size="2"><li class="sc-hSdWYo bIQQAp">Event Store: <a class="sc-hMqMXs hFzpJw" href="https://eventstore.org/" color="link">https://eventstore.org/</a></li><li class="sc-hSdWYo bIQQAp">Rails Event Store: <a class="sc-hMqMXs hFzpJw" href="https://railseventstore.org/" color="link">https://railseventstore.org/</a></li><li class="sc-hSdWYo bIQQAp">Roll your own.</li></ul></div></div><div class="sc-htoDjs zIEGn"><div><h1 class="sc-jzJRlG enxKql sc-fjdhpX glSdDF" font-size="4" color="heading">That&#x27;s it.</h1><h3 class="sc-kgoBCf kVSTZj sc-chPdSV eEkiTr" font-size="2" color="heading">Q&amp;A and Thank you.</h3></div></div></div></div></div></div><div class="sc-htpNat cXgiMa"><div class="sc-bdVaJa eCoqJu"><button class="sc-bwzfXH kaUAEP" title="go to: 0" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 1" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 2" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 3" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 4" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 5" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 6" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 7" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 8" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 9" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 10" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 11" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 12" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 13" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 14" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 15" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 16" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 17" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 18" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 19" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 20" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 21" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 22" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 23" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 24" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 25" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 26" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 27" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 28" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 29" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 30" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 31" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 32" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 33" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 34" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 35" color="text"></button><button class="sc-bwzfXH gtARdA" title="go to: 36" color="text"></button></div></div><div class="sc-ifAKCX hOCGEu sc-bxivhb fbxTAJ" role="button" title="Previous Slide"></div><div class="sc-EHOje bNhvRs sc-bxivhb fbxTAJ" role="button" title="Next Slide"></div></div>
+<script src="main.js"></script>
+</body>
+</html>
