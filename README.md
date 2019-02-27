@@ -1,3 +1,6 @@
+# Presentation
+
+View it in [here](https://pisinr.github.com/iwa-event-sourcing-slides/)
 
 # mdx-deck basic template
 
@@ -32,7 +35,3 @@ To export an image of the title slide:
 ```sh
 npm run image
 ```
-
-For more documentation see the [mdx-deck][] repo.
-
-[mdx-deck]: https://github.com/jxnblk/mdx-deck
