@@ -1,6 +1,6 @@
 # Presentation
 
-View it in [here](https://pisinr.github.com/iwa-event-sourcing-slides/)
+View it in [here](https://pisinr.github.io/iwa-event-sourcing-slides/)
 
 # mdx-deck basic template
 
